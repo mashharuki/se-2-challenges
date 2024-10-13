@@ -2,14 +2,13 @@
 pragma solidity ^0.8.0;
 
 import "./DiceGame.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract RiggedRoll {
+contract RiggedRoll is Ownable  {
     DiceGame public diceGame;
-    address public owner;
 
     constructor(address _diceGameAddress) {
         diceGame = DiceGame(payable(_diceGameAddress));
-        owner = msg.sender;
     }
 
     receive() external payable {}
@@ -32,8 +31,7 @@ contract RiggedRoll {
         return uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), address(diceGame), nonce))) % 16;
     }
 
-    function withdraw(address _addr, uint256 _amount) external {
-        require(msg.sender == owner, "Only owner can withdraw.");
+    function withdraw(address _addr, uint256 _amount) external onlyOwner {
         require(address(this).balance >= _amount, "Insufficient funds.");
         payable(_addr).transfer(_amount);
     }

@@ -210,7 +210,7 @@ const deployedContracts = {
   },
   11155111: {
     DiceGame: {
-      address: "0xa9Bf293B85E46079665019BE17a67B8D925572f7",
+      address: "0x70D41F87741932a25049Bf18035A2bff3511e6bE",
       abi: [
         {
           inputs: [],
@@ -307,13 +307,13 @@ const deployedContracts = {
       inheritedFunctions: {},
     },
     RiggedRoll: {
-      address: "0x91AD06ad3E52A946577683cCF8Cb5493b92C5807",
+      address: "0xa711098909503e0A6087c43150BE944c61016924",
       abi: [
         {
           inputs: [
             {
-              internalType: "address payable",
-              name: "diceGameAddress",
+              internalType: "address",
+              name: "_diceGameAddress",
               type: "address",
             },
           ],
@@ -376,7 +376,7 @@ const deployedContracts = {
           inputs: [],
           name: "riggedRoll",
           outputs: [],
-          stateMutability: "nonpayable",
+          stateMutability: "payable",
           type: "function",
         },
         {
@@ -393,7 +393,18 @@ const deployedContracts = {
           type: "function",
         },
         {
-          inputs: [],
+          inputs: [
+            {
+              internalType: "address",
+              name: "_addr",
+              type: "address",
+            },
+            {
+              internalType: "uint256",
+              name: "_amount",
+              type: "uint256",
+            },
+          ],
           name: "withdraw",
           outputs: [],
           stateMutability: "nonpayable",
