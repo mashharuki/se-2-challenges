@@ -1,5 +1,6 @@
 import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeployFunction } from "hardhat-deploy/types";
+import { Contract } from "ethers";
 // import { Contract } from "ethers";
 
 /**
@@ -21,25 +22,32 @@ const deployVendor: DeployFunction = async function (hre: HardhatRuntimeEnvironm
     You can run the `yarn account` command to check your balance in every network.
   */
   // // Deploy Vendor
-  // const { deployer } = await hre.getNamedAccounts();
-  // const { deploy } = hre.deployments;
-  // const yourToken = await hre.ethers.getContract<Contract>("YourToken", deployer);
-  // const yourTokenAddress = await yourToken.getAddress();
-  // await deploy("Vendor", {
-  //   from: deployer,
-  //   // Contract constructor arguments
-  //   args: [yourTokenAddress],
-  //   log: true,
-  //   // autoMine: can be passed to the deploy function to make the deployment process faster on local networks by
-  //   // automatically mining the contract deployment transaction. There is no effect on live networks.
-  //   autoMine: true,
-  // });
-  // const vendor = await hre.ethers.getContract<Contract>("Vendor", deployer);
-  // const vendorAddress = await vendor.getAddress();
+  const { deployer } = await hre.getNamedAccounts();
+  const { deploy } = hre.deployments;
+
+  const yourToken = await hre.ethers.getContract<Contract>("YourToken", deployer);
+  const yourTokenAddress = await yourToken.getAddress();
+  
+  await deploy("Vendor", {
+     from: deployer,
+     args: [yourTokenAddress],
+     log: true,
+     autoMine: true,
+  });
+  
+  const vendor = await hre.ethers.getContract<Contract>("Vendor", deployer);
+  const vendorAddress = await vendor.getAddress();
+
+  console.log("deployer:", deployer);
+  console.log("Vendor deployed to:", vendorAddress);
+
+  console.log("balance of Your Token:", await yourToken.balanceOf(deployer));
+  console.log("balance of Your Token:", await yourToken.balanceOf(await yourToken.getAddress()));
+
   // // Transfer tokens to Vendor
-  // await yourToken.transfer(vendorAddress, hre.ethers.parseEther("1000"));
+  await yourToken.transfer(vendorAddress, hre.ethers.parseEther("1000"));
   // // Transfer contract ownership to your frontend address
-  // await vendor.transferOwnership("**YOUR FRONTEND ADDRESS**");
+  await vendor.transferOwnership("0x51908F598A5e0d8F1A3bAbFa6DF76F9704daD072");
 };
 
 export default deployVendor;
