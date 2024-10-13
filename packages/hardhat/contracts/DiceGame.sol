@@ -40,12 +40,11 @@ contract DiceGame {
       return;
     }
 
-    uint256 amount = prize;
-    (bool sent, ) = msg.sender.call{value: amount}("");
-    require(sent, "Failed to send Ether");
-
-    resetPrize();
-    emit Winner(msg.sender, amount);
+    if (roll <= 3) {
+        // If the roll is a win, emit the Winner event and transfer winnings
+        emit Winner(msg.sender, msg.value);
+        payable(msg.sender).transfer(msg.value * 2);
+    }
   }
 
   receive() external payable {}

