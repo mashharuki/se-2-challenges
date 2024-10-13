@@ -149,7 +149,7 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
 
       it("Should revert if 0 ETH sent", async function () {
         await expect(
-          dexContract.ethToToken({ value: ethers.parseEther("0") }),
+          dexContract.ethToToken({ value: 0 }),
           "ethToToken should revert when sending 0 value...",
         ).to.be.reverted;
       });
@@ -293,7 +293,7 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
         expect(user2liquidity).to.equal("0");
         console.log("\t", " 🔼 Expecting the deposit function to emit correctly...");
         await expect(
-          dexContract.connect(user2).deposit((ethers.parseEther("5"), { value: ethers.parseEther("5") })),
+          dexContract.connect(user2).deposit(ethers.parseEther("5"), { value: ethers.parseEther("5") }),
           "Check the order of the values when emitting LiquidityProvided: msg.sender, liquidityMinted, msg.value, tokenDeposit",
         )
           .to.emit(dexContract, "LiquidityProvided")
@@ -312,7 +312,7 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
 
       it("Should revert if 0 ETH deposited", async function () {
         await expect(
-          dexContract.deposit((ethers.parseEther("0"), { value: ethers.parseEther("0") })),
+          dexContract.deposit(ethers.parseEther("0"), { value: ethers.parseEther("0") }),
           "Should revert if 0 value is sent",
         ).to.be.reverted;
       });
@@ -328,8 +328,8 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
 
         console.log("\t", " 🔽 Calling withdraw with with a value of 1 Eth...");
         const tx1 = await dexContract.withdraw(ethers.parseEther("1"));
-        const userBallonsBalanceAfter = await balloonsContract.balanceOf(deployer.address);
         const tx1_receipt = await tx1.wait();
+        const userBallonsBalanceAfter = await balloonsContract.balanceOf(deployer.address);
 
         const eth_out = await getEventValue(tx1_receipt, 2);
         const token_out = await getEventValue(tx1_receipt, 3);
@@ -370,7 +370,7 @@ describe("🚩 Challenge 4: ⚖️ 🪙 DEX", () => {
         expect(totalLpBefore, "Emitted total liquidity should decrease").to.be.above(totalLpAfter);
       });
 
-      it("Should emit event LiquidityWithdrawn when withdraw() called", async function () {
+      it("Should emit event LiquidityRemoved when withdraw() called", async function () {
         await expect(
           dexContract.withdraw(ethers.parseEther("1.5")),
           "Make sure you emit the LiquidityRemoved event correctly",
